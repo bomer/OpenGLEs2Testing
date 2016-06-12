@@ -190,7 +190,16 @@ func onPaint(glctx gl.Context, sz size.Event) {
 	// }
 	// glctx.DisableVertexAttribArray(position)
 
-	for j := 0; j < 100; j++ {
+	// //clear func
+	// for i := 0; i < 64; i++ {
+	// 	for j := 0; j < 32; j++ {
+	// 		img.RGBA.Set(i, j, image.White)
+
+	// 	}
+
+	// }
+
+	for j := 0; j < 5; j++ {
 
 		img.RGBA.Set(rand.Intn(64), rand.Intn(32), image.Black)
 
