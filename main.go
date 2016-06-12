@@ -143,6 +143,9 @@ func onPaint(glctx gl.Context, sz size.Event) {
 		green = 0
 	}
 
+	glctx.BindBuffer(gl.ARRAY_BUFFER, buf)
+	glctx.EnableVertexAttribArray(position)
+	glctx.VertexAttribPointer(position, coordsPerVertex, gl.FLOAT, false, 0, 0)
 	for i := 0; i < 64; i++ {
 		for j := 0; j < 32; j++ {
 			if i%2 == 0 {
@@ -150,28 +153,23 @@ func onPaint(glctx gl.Context, sz size.Event) {
 			} else {
 				glctx.Uniform4f(color, 0, 0, 0, 1)
 			}
-
 			// glctx.Uniform2f(offset, touchX/float32(sz.WidthPx), touchY/float32(sz.HeightPx))
 			glctx.Uniform2f(offset, float32(i)/float32(64), float32(j)/float32(32))
-
-			glctx.BindBuffer(gl.ARRAY_BUFFER, buf)
-			glctx.EnableVertexAttribArray(position)
-			glctx.VertexAttribPointer(position, coordsPerVertex, gl.FLOAT, false, 0, 0)
 			glctx.DrawArrays(gl.TRIANGLE_FAN, 0, vertexCount)
-			glctx.DisableVertexAttribArray(position)
+
 		}
 	}
-
+	glctx.DisableVertexAttribArray(position)
 	fps.Draw(sz)
 }
 
-const off = 0.057
+const squareoffset = 0.057
 
 var triangleData = f32.Bytes(binary.LittleEndian,
-	0.0, off, 0.0, // top left
+	0.0, squareoffset, 0.0, // top left
 	0.0, 0.0, 0.0, // bottom left
-	off, 0.0, 0.0, // bottom right
-	off, off, 0.0,
+	squareoffset, 0.0, 0.0, // bottom right
+	squareoffset, squareoffset, 0.0,
 )
 
 const (
