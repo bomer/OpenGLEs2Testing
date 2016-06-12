@@ -134,6 +134,7 @@ func onStart(glctx gl.Context) {
 	// var img glutil.Image
 	// rec := image.Rect(0, 0, 64, 32)
 	img = *images.NewImage(64, 32)
+	img.RGBA.Set(0, 0, image.Black)
 	img.RGBA.Set(10, 10, image.Black)
 	img.RGBA.Set(11, 10, image.Black)
 	img.RGBA.Set(12, 10, image.Black)
@@ -189,8 +190,8 @@ func onPaint(glctx gl.Context, sz size.Event) {
 	// glctx.DisableVertexAttribArray(position)
 
 	tl := geom.Point{0, 0}
-	tr := geom.Point{500, 0}
-	bl := geom.Point{0, 250}
+	tr := geom.Point{geom.Pt(sz.WidthPx / 4), 0}
+	bl := geom.Point{0, geom.Pt(sz.HeightPx / 4)}
 	// ptBottomRight := geom.Point{12 + 32, 16}
 	img.Upload()
 
