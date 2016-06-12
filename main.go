@@ -190,7 +190,7 @@ func onPaint(glctx gl.Context, sz size.Event) {
 	// }
 	// glctx.DisableVertexAttribArray(position)
 
-	// //clear func
+	//clear func
 	// for i := 0; i < 64; i++ {
 	// 	for j := 0; j < 32; j++ {
 	// 		img.RGBA.Set(i, j, image.White)
@@ -199,7 +199,7 @@ func onPaint(glctx gl.Context, sz size.Event) {
 
 	// }
 
-	for j := 0; j < 5; j++ {
+	for j := 0; j < 100; j++ {
 
 		img.RGBA.Set(rand.Intn(64), rand.Intn(32), image.Black)
 
@@ -223,7 +223,11 @@ func onPaint(glctx gl.Context, sz size.Event) {
 
 	img.Draw(sz, tl, tr, bl, img.RGBA.Bounds())
 	// img.Draw(sz, , sz.WidthPx, 0, img.RGBA.Rect)
-	fps.Draw(sz)
+	// fps.Draw(sz)
+
+	//cleanup
+	img.Release()
+	img = *images.NewImage(64, 32)
 }
 
 const squareoffset = 0.057
