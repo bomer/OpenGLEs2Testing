@@ -39,7 +39,10 @@ import (
 	"golang.org/x/mobile/exp/app/debug"
 	"golang.org/x/mobile/exp/f32"
 	"golang.org/x/mobile/exp/gl/glutil"
+	"golang.org/x/mobile/geom"
 	"golang.org/x/mobile/gl"
+	"image"
+	"image/png"
 	"os"
 
 	"log"
@@ -57,6 +60,7 @@ var (
 	green  float32
 	touchX float32
 	touchY float32
+	img    glutil.Image
 )
 
 func main() {
@@ -123,6 +127,29 @@ func onStart(glctx gl.Context) {
 
 	images = glutil.NewImages(glctx)
 	fps = debug.NewFPS(images)
+
+	// gl.TexImage2D(GL_TEXTURE_2D, 0, 3, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid*)screenData);
+	// test3 := []byte{2, 3, 5}
+	// glctx.TexImage2D(gl.TEXTURE_2D, 0, 800, 800, gl.RGB, gl.UNSIGNED_BYTE, test3)
+	// var img glutil.Image
+	// rec := image.Rect(0, 0, 64, 32)
+	img = *images.NewImage(64, 32)
+	img.RGBA.Set(10, 10, image.Black)
+	img.RGBA.Set(11, 10, image.Black)
+	img.RGBA.Set(12, 10, image.Black)
+	img.RGBA.Set(13, 10, image.Black)
+	img.RGBA.Set(14, 10, image.Black)
+	img.RGBA.Set(15, 10, image.Black)
+	img.RGBA.Set(15, 11, image.Black)
+	img.RGBA.Set(15, 12, image.Black)
+	img.RGBA.Set(15, 13, image.Black)
+	img.RGBA.Set(63, 31, image.Black)
+
+	// images.NewImage(w, h)
+
+	w, _ := os.Create("test.png")
+	png.Encode(w, img.RGBA)
+
 }
 
 func onStop(glctx gl.Context) {
@@ -133,7 +160,7 @@ func onStop(glctx gl.Context) {
 }
 
 func onPaint(glctx gl.Context, sz size.Event) {
-	glctx.ClearColor(1, 0, 0, 1)
+	glctx.ClearColor(1, 1, 1, 1)
 	glctx.Clear(gl.COLOR_BUFFER_BIT)
 
 	glctx.UseProgram(program)
@@ -144,22 +171,41 @@ func onPaint(glctx gl.Context, sz size.Event) {
 	}
 
 	glctx.BindBuffer(gl.ARRAY_BUFFER, buf)
-	glctx.EnableVertexAttribArray(position)
-	glctx.VertexAttribPointer(position, coordsPerVertex, gl.FLOAT, false, 0, 0)
-	for i := 0; i < 64; i++ {
-		for j := 0; j < 32; j++ {
-			if i%2 == 0 {
-				glctx.Uniform4f(color, 1, 1, 1, 1)
-			} else {
-				glctx.Uniform4f(color, 0, 0, 0, 1)
-			}
-			// glctx.Uniform2f(offset, touchX/float32(sz.WidthPx), touchY/float32(sz.HeightPx))
-			glctx.Uniform2f(offset, float32(i)/float32(64), float32(j)/float32(32))
-			glctx.DrawArrays(gl.TRIANGLE_FAN, 0, vertexCount)
+	// glctx.EnableVertexAttribArray(position)
+	// glctx.VertexAttribPointer(position, coordsPerVertex, gl.FLOAT, false, 0, 0)
+	// for i := 0; i < 64; i++ {
+	// 	for j := 0; j < 32; j++ {
+	// 		if i%2 == 0 {
+	// 			glctx.Uniform4f(color, 1, 1, 1, 1)
+	// 		} else {
+	// 			glctx.Uniform4f(color, 0, 0, 0, 1)
+	// 		}
+	// 		// glctx.Uniform2f(offset, touchX/float32(sz.WidthPx), touchY/float32(sz.HeightPx))
+	// 		glctx.Uniform2f(offset, float32(i)/float32(64), float32(j)/float32(32))
+	// 		glctx.DrawArrays(gl.TRIANGLE_FAN, 0, vertexCount)
 
-		}
-	}
-	glctx.DisableVertexAttribArray(position)
+	// 	}
+	// }
+	// glctx.DisableVertexAttribArray(position)
+
+	tl := geom.Point{0, 0}
+	tr := geom.Point{500, 0}
+	bl := geom.Point{0, 250}
+	// ptBottomRight := geom.Point{12 + 32, 16}
+	img.Upload()
+
+	// Set up the texture
+	glctx.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+	glctx.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+	glctx.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+	glctx.TexParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	// glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	img.Draw(sz, tl, tr, bl, img.RGBA.Bounds())
+	// img.Draw(sz, , sz.WidthPx, 0, img.RGBA.Rect)
 	fps.Draw(sz)
 }
 
