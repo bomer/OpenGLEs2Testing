@@ -43,9 +43,10 @@ import (
 	"golang.org/x/mobile/gl"
 	"image"
 	"image/png"
+	"log"
 	"os"
 
-	"log"
+	"math/rand"
 )
 
 var (
@@ -188,6 +189,12 @@ func onPaint(glctx gl.Context, sz size.Event) {
 	// 	}
 	// }
 	// glctx.DisableVertexAttribArray(position)
+
+	for j := 0; j < 100; j++ {
+
+		img.RGBA.Set(rand.Intn(64), rand.Intn(32), image.Black)
+
+	}
 
 	tl := geom.Point{0, 0}
 	tr := geom.Point{geom.Pt(sz.WidthPx / 4), 0}
